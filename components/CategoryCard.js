@@ -1,21 +1,40 @@
-import { StyleSheet, Text, View, Image, Dimensions } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Dimensions,
+  Pressable,
+} from 'react-native';
 import React from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
 const { width } = Dimensions.get('window');
-const CategoryCard = () => {
+const CategoryCard = ({ item, style }) => {
+  const { name } = useRoute();
+  const { navigate } = useNavigation();
+
+  const switchScreens = () => {
+    navigate('Details', { item });
+  };
   return (
-    <View style={styles.card}>
+    <Pressable
+      style={({ pressed }) => [styles.card, style, pressed && styles.pressed]}
+      onPress={name === 'Search' ? switchScreens : null}
+    >
       <Image
         source={{
-          uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUX7i5TBboTbN4R02Dl5TuOzA8ngG7e8aWPgHgQD67&s',
+          uri: item?.thumbnail_url,
         }}
         style={styles.img}
       />
-      <Text style={styles.text}>Classic Greek salad</Text>
+      <Text numberOfLines={2} style={styles.text}>
+        {item?.name}
+      </Text>
       <View style={styles.timer}>
         <Text>Time</Text>
-        <Text>15 mins</Text>
+        <Text>{item?.cook_time_minutes || 0} mins</Text>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
@@ -46,5 +65,8 @@ const styles = StyleSheet.create({
   },
   timer: {
     alignSelf: 'flex-start',
+  },
+  pressed: {
+    opacity: 0.7,
   },
 });

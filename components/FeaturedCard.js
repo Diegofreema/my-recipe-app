@@ -3,7 +3,9 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import Rating from './Rating';
 const { width } = Dimensions.get('window');
-const FeaturedCard = () => {
+const FeaturedCard = ({ item }) => {
+  const rating =
+    item.user_ratings.count_positive / item.user_ratings.count_negative;
   return (
     <View style={styles.con}>
       {/* top */}
@@ -11,14 +13,14 @@ const FeaturedCard = () => {
         {/* top-left */}
         <View style={{ flex: 1, marginBottom: 20 }}>
           <Text numberOfLines={1} style={styles.foodText}>
-            Steak with Tomatoes and Pepper
+            {item?.name}
           </Text>
-          <Rating rating={3} />
+          <Rating rating={rating} />
         </View>
         {/* top-right */}
         <Image
           source={{
-            uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUX7i5TBboTbN4R02Dl5TuOzA8ngG7e8aWPgHgQD67&s',
+            uri: item?.thumbnail_url,
           }}
           style={styles.img}
         />
@@ -33,7 +35,7 @@ const FeaturedCard = () => {
             }}
             style={styles.authorImage}
           />
-          <Text>by Frank Ben</Text>
+          <Text>{item?.credits[0].name}</Text>
         </View>
         {/* bottom-left */}
 
@@ -44,7 +46,7 @@ const FeaturedCard = () => {
             size={24}
             color="black"
           />
-          <Text>20 mins</Text>
+          <Text>{item.cook_time_minutes || 0} mins</Text>
         </View>
       </View>
     </View>
@@ -95,7 +97,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   con: {
-    width: width * 0.6,
+    width: width * 0.7,
     backgroundColor: 'white',
     paddingVertical: 10,
     paddingHorizontal: 15,

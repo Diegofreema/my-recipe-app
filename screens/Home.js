@@ -1,39 +1,193 @@
 import { StyleSheet, Text, View, Dimensions, FlatList } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Entypo } from '@expo/vector-icons';
 import Input from '../components/Input';
 import { myStyles } from '../constants/generalStyles';
 
 import FeaturedCard from '../components/FeaturedCard';
 import CategoryFilter from '../components/CategoryFilter';
+import { ActivityIndicator } from 'react-native';
+import axios from 'axios';
 const { width } = Dimensions.get('window');
 const Home = () => {
+  const [recipes, setRecipes] = useState([]);
+  const [searchRecipe, setSearchRecipes] = useState([]);
+  const [heathy, setHeathy] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [tags, setTags] = useState([]);
+  const [selectedTag, setSelectedTag] = useState('North American');
+  useEffect(() => {
+    const getMeals = async () => {
+      setIsLoading(true);
+
+      const options = {
+        method: 'GET',
+        url: 'https://tasty.p.rapidapi.com/recipes/list',
+        params: {
+          from: '0',
+          size: '7',
+          tags: selectedTag,
+        },
+        headers: {
+          'X-RapidAPI-Key':
+            'e91e1b5272msh83bedc2f51c314fp188ccbjsn5d3bfe03e985',
+          'X-RapidAPI-Host': 'tasty.p.rapidapi.com',
+        },
+      };
+
+      try {
+        const response = await axios.request(options);
+
+        setRecipes(response?.data?.results);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getMeals();
+  }, []);
+
+  useEffect(() => {
+    const getMeals = async () => {
+      const options = {
+        method: 'GET',
+        url: 'https://tasty.p.rapidapi.com/recipes/list',
+        params: {
+          from: '0',
+          size: '20',
+          tags: selectedTag,
+        },
+        headers: {
+          'X-RapidAPI-Key':
+            'e91e1b5272msh83bedc2f51c314fp188ccbjsn5d3bfe03e985',
+          'X-RapidAPI-Host': 'tasty.p.rapidapi.com',
+        },
+      };
+
+      try {
+        const response = await axios.request(options);
+
+        setRecipes(response?.data?.results);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getMeals();
+  }, [selectedTag]);
+  useEffect(() => {
+    const getMealsTags = async () => {
+      const options = {
+        method: 'GET',
+        url: 'https://tasty.p.rapidapi.com/recipes/list',
+        params: {
+          from: '0',
+          size: '7',
+        },
+        headers: {
+          'X-RapidAPI-Key':
+            'e91e1b5272msh83bedc2f51c314fp188ccbjsn5d3bfe03e985',
+          'X-RapidAPI-Host': 'tasty.p.rapidapi.com',
+        },
+      };
+
+      try {
+        const response = await axios.request(options);
+
+        setSearchRecipes(response?.data?.results);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getMealsTags();
+  }, []);
+
+  useEffect(() => {
+    const allTags = [];
+    searchRecipe?.forEach((recipe) => {
+      recipe?.tags?.forEach((tag) => {
+        if (!allTags?.includes(tag.display_name)) {
+          allTags.push(tag.display_name);
+        }
+      });
+    });
+    setTags(allTags);
+  }, [recipes]);
+
+  useEffect(() => {
+    const getHealthyRecipes = async () => {
+      setIsLoading(true);
+
+      const options = {
+        method: 'GET',
+        url: 'https://tasty.p.rapidapi.com/recipes/list',
+        params: {
+          from: '0',
+          size: '5',
+          tags: 'healthy',
+        },
+        headers: {
+          'X-RapidAPI-Key':
+            'e91e1b5272msh83bedc2f51c314fp188ccbjsn5d3bfe03e985',
+          'X-RapidAPI-Host': 'tasty.p.rapidapi.com',
+        },
+      };
+
+      try {
+        const response = await axios.request(options);
+
+        setHeathy(response?.data?.results);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getHealthyRecipes();
+  }, []);
+
   return (
-    <View style={[myStyles]}>
-      <View style={styles.searchContainer}>
-        <Entypo
-          name="magnifying-glass"
-          size={24}
-          color="#D9D9D9"
-          style={{ marginRight: 5 }}
-        />
-        <Input />
-      </View>
-      <View>
-        <Text style={styles.text}>Featured Recipe</Text>
-        <FlatList
-          data={[1, 2, 3, 4, 5, 6, 7]}
-          renderItem={({ item }) => <FeaturedCard />}
-          keyExtractor={(item) => item}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingVertical: 30,
-            paddingHorizontal: 10,
-          }}
-        />
-      </View>
-      <CategoryFilter />
+    <View style={{ flex: 1 }}>
+      {isLoading ? (
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <ActivityIndicator />
+        </View>
+      ) : (
+        <View style={[myStyles]}>
+          <View style={styles.searchContainer}>
+            <Entypo
+              name="magnifying-glass"
+              size={24}
+              color="#D9D9D9"
+              style={{ marginRight: 5 }}
+            />
+            <Input nav={true} />
+          </View>
+          <View>
+            <Text style={styles.text}>Healthy Recipe</Text>
+
+            <FlatList
+              data={heathy}
+              renderItem={({ item }) => <FeaturedCard item={item} />}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingVertical: 30,
+                paddingHorizontal: 10,
+              }}
+            />
+          </View>
+          <CategoryFilter
+            categories={tags}
+            data={recipes}
+            setSelectedTag={setSelectedTag}
+            selectedTag={selectedTag}
+          />
+        </View>
+      )}
     </View>
   );
 };

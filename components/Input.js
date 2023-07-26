@@ -1,11 +1,22 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 
-const Input = () => {
+const Input = ({ nav = false, value, setValue }) => {
+  const navigation = useNavigation();
+  const navigationHandler = () => {
+    navigation.navigate('Search');
+  };
   return (
-    <View>
-      <TextInput placeholder="Search recipe " />
-    </View>
+    <Pressable onPress={nav ? navigationHandler : null} style={{ flex: 1 }}>
+      <TextInput
+        editable={nav === true ? false : true}
+        placeholder="Search recipe "
+        style={{ flex: 1 }}
+        onChangeText={setValue}
+        value={value}
+      />
+    </Pressable>
   );
 };
 

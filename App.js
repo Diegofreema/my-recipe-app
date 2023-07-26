@@ -4,6 +4,8 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Splash from './screens/Splash';
 import Home from './screens/Home';
+import Search from './screens/Search';
+import Details from './screens/Details';
 
 const Stack = createNativeStackNavigator();
 const MyTheme = {
@@ -30,6 +32,22 @@ export default function App() {
           options={{
             headerLeft: () => '',
             headerTitleAlign: 'center',
+            headerShadowVisible: false,
+          }}
+        />
+        <Stack.Screen
+          name="Search"
+          component={Search}
+          options={{
+            headerTitleAlign: 'center',
+            headerShadowVisible: false,
+          }}
+        />
+        <Stack.Screen
+          name="Details"
+          component={Details}
+          options={{
+            title: '',
             headerShadowVisible: false,
           }}
         />

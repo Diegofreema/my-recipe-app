@@ -1,31 +1,44 @@
-import { Pressable, StyleSheet, Text, View, FlatList } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  ScrollView,
+} from 'react-native';
 import React, { useState } from 'react';
 import CategoryCard from './CategoryCard';
 
-const categories = ['Trending', 'Chocoholic', 'Daily', 'Seasonal'];
-const CategoryFilter = () => {
-  const [selected, setSelected] = useState('Trending');
-  console.log(selected);
+const CategoryFilter = ({ data, categories, setSelectedTag, selectedTag }) => {
   return (
     <View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        {categories.map((category) => (
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        horizontal
+        style={{ flexDirection: 'row' }}
+      >
+        {categories?.map((category) => (
           <Pressable
-            style={[styles.text, selected === category && styles.selectedStyle]}
-            onPress={() => setSelected(category)}
+            style={[
+              styles.text,
+              selectedTag === category && styles.selectedStyle,
+            ]}
+            onPress={() => setSelectedTag(category)}
             key={category}
           >
-            <Text style={{ color: selected === category ? 'white' : 'black' }}>
+            <Text
+              style={{ color: selectedTag === category ? 'white' : 'black' }}
+            >
               {category}
             </Text>
           </Pressable>
         ))}
-      </View>
+      </ScrollView>
       <View style={{ marginTop: 50, flexDirection: 'row' }}>
         <FlatList
-          data={[1, 2, 3, 4, 5, 6, 7]}
-          renderItem={({ item }) => <CategoryCard />}
-          keyExtractor={(item) => item}
+          data={data}
+          renderItem={({ item }) => <CategoryCard item={item} />}
+          keyExtractor={(item) => item.id}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
